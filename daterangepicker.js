@@ -14,36 +14,50 @@
             if (typeof moment !== 'function' && moment.hasOwnProperty('default')) moment = moment['default']
             return factory(moment, jquery);
         });
-    } else if (typeof module === 'object' && module.exports) {
+    } else if (typeof module === 'object') {
         // Node / Browserify
         //isomorphic issue
-        var jQuery = (typeof window != 'undefined') ? window.jQuery : undefined;
-        if (!jQuery) {
-            jQuery = require('jquery');
-            if (!jQuery.fn) jQuery.fn = {};
-        }
-        var moment = (typeof window != 'undefined' && typeof window.moment != 'undefined') ? window.moment : require('moment');
-        module.exports = factory(moment, jQuery);
+        // var jQuery = (typeof window != 'undefined') ? window.jQuery : undefined;
+        // if (!jQuery) {
+        //     jQuery = require('jquery');
+        //     if (!jQuery.fn) jQuery.fn = {};
+        // }
+        // var moment = (typeof window != 'undefined' && typeof window.moment != 'undefined') ? window.moment : require('moment');
+
+        // console.log('module', module.exports)
+        module.exports = function(moment, jQuery) {
+            // Node / Browserify
+            //isomorphic issue
+            jQuery = (typeof window != 'undefined') ? window.jQuery : undefined;
+            if (!jQuery) {
+                jQuery = require('jquery');
+                if (!jQuery.fn) jQuery.fn = {};
+            }
+            moment = (typeof window != 'undefined' && typeof window.moment != 'undefined') ? window.moment : require('moment');
+
+            return factory(moment, jQuery);
+        };
     } else {
         // Browser globals
         root.daterangepicker = factory(root.moment, root.jQuery);
     }
 }(typeof window !== 'undefined' ? window : this, function(moment, $) {
+    // console.log('datepicker', moment, $);
     var DateRangePicker = function(element, options, cb) {
 
         //default settings for options
         this.parentEl = 'body';
         this.element = $(element);
-        this.startDate = moment().startOf('day');
-        this.endDate = moment().endOf('day');
+        this.startDate = this.moment().startOf('day');
+        this.endDate = this.moment().endOf('day');
         this.minDate = false;
         this.maxDate = false;
         this.maxSpan = false;
         this.autoApply = false;
         this.singleDatePicker = false;
         this.showDropdowns = false;
-        this.minYear = moment().subtract(100, 'year').format('YYYY');
-        this.maxYear = moment().add(100, 'year').format('YYYY');
+        this.minYear = this.moment().subtract(100, 'year').format('YYYY');
+        this.maxYear = this.moment().add(100, 'year').format('YYYY');
         this.showWeekNumbers = false;
         this.showISOWeekNumbers = false;
         this.showCustomRangeLabel = true;
@@ -447,6 +461,7 @@
     };
 
     DateRangePicker.prototype = {
+        moment,
 
         constructor: DateRangePicker,
 
